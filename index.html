@@ -15,138 +15,36 @@
 --btn-bg: #2563eb;
 --input-bg: #334155;
 --danger-bg: #ef4444;
+--warning-bg: #f59e0b;
 }
 
-body {
-font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
-background-color: var(--bg-color);
-color: var(--text-main);
-margin: 0;
-padding: 20px;
-padding-bottom: 40px;
-}
-
-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-bottom: 20px;
-padding-top: 10px;
-}
-
+body { font-family: 'Pretendard', -apple-system, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; padding-bottom: 40px; }
+header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-top: 10px; }
 h1 { font-size: 22px; margin: 0; font-weight: 700; }
 
-.add-form {
-display: flex;
-flex-wrap: wrap;
-gap: 8px;
-margin-bottom: 24px;
-background-color: var(--card-bg);
-padding: 12px;
-border-radius: 12px;
-}
-
-.add-form input {
-flex: 1;
-min-width: 100px;
-background-color: var(--input-bg);
-border: 1px solid #475569;
-color: white;
-padding: 10px;
-border-radius: 8px;
-font-size: 14px;
-}
-
-.btn {
-color: white;
-border: none;
-padding: 10px 16px;
-border-radius: 8px;
-font-weight: 600;
-cursor: pointer;
-white-space: nowrap;
-}
-
+.add-form { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; background-color: var(--card-bg); padding: 12px; border-radius: 12px; }
+.add-form input { flex: 1; min-width: 100px; background-color: var(--input-bg); border: 1px solid #475569; color: white; padding: 10px; border-radius: 8px; font-size: 14px; }
+.btn { color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; white-space: nowrap; }
 .add-btn { background-color: var(--btn-bg); }
 .reset-btn { background-color: var(--danger-bg); }
 
-.etf-card {
-background-color: var(--card-bg);
-border-radius: 16px;
-padding: 20px;
-margin-bottom: 16px;
-box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-position: relative;
-}
+.network-warning { background-color: rgba(245, 158, 11, 0.2); color: var(--warning-bg); padding: 12px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; display: none; border: 1px solid var(--warning-bg); }
 
-.delete-btn {
-position: absolute;
-top: 16px;
-right: 16px;
-background: none;
-border: none;
-color: #64748b;
-font-size: 16px;
-cursor: pointer;
-padding: 4px;
-}
-
-.etf-header {
-display: flex;
-justify-content: space-between;
-margin-bottom: 12px;
-padding-right: 24px;
-}
-
+.etf-card { background-color: var(--card-bg); border-radius: 16px; padding: 20px; margin-bottom: 16px; position: relative; }
+.delete-btn { position: absolute; top: 16px; right: 16px; background: none; border: none; color: #64748b; font-size: 16px; cursor: pointer; padding: 4px; }
+.etf-header { display: flex; justify-content: space-between; margin-bottom: 12px; padding-right: 24px; }
 .etf-name { font-weight: 600; font-size: 16px; }
 .etf-ticker { color: var(--text-sub); font-size: 13px; }
-
-.etf-price-row {
-display: flex;
-align-items: baseline;
-gap: 12px;
-}
-
+.etf-price-row { display: flex; align-items: baseline; gap: 12px; }
 .price { font-size: 24px; font-weight: 700; }
-
-.change {
-font-size: 15px;
-font-weight: 600;
-padding: 4px 8px;
-border-radius: 6px;
-}
-
+.change { font-size: 15px; font-weight: 600; padding: 4px 8px; border-radius: 6px; }
 .up { color: var(--up-color); background-color: rgba(239, 68, 68, 0.1); }
 .down { color: var(--down-color); background-color: rgba(59, 130, 246, 0.1); }
-.error-text { color: var(--up-color); font-size: 14px; }
 
-.copy-btn {
-width: 100%;
-background-color: var(--btn-bg);
-color: white;
-border: none;
-padding: 16px;
-border-radius: 12px;
-font-size: 16px;
-font-weight: 600;
-margin-top: 10px;
-cursor: pointer;
-}
-
+.copy-btn { width: 100%; background-color: var(--btn-bg); color: white; border: none; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 600; margin-top: 10px; cursor: pointer; }
 .copy-btn:disabled { background-color: #475569; cursor: not-allowed; }
-
-.last-update {
-text-align: center;
-color: var(--text-sub);
-font-size: 12px;
-margin-top: 24px;
-}
-
-.loading {
-text-align: center;
-padding: 40px 0;
-color: var(--text-sub);
-}
+.last-update { text-align: center; color: var(--text-sub); font-size: 12px; margin-top: 24px; }
+.loading { text-align: center; padding: 40px 0; color: var(--text-sub); }
 </style>
 </head>
 <body>
@@ -160,6 +58,11 @@ color: var(--text-sub);
 <input type="text" id="newTicker" placeholder="티커">
 <button class="btn add-btn" onclick="addTicker()">추가</button>
 <button class="btn reset-btn" onclick="resetApp()">초기화</button>
+</div>
+
+<!-- 네트워크 차단 시 나타나는 경고 메시지 -->
+<div id="warning-msg" class="network-warning">
+⚠️ 현재 네트워크(방화벽)에서 실시간 연결을 차단하고 있습니다. 임시(오프라인) 데이터를 표시합니다.
 </div>
 
 <div id="dashboard">
@@ -178,13 +81,17 @@ const defaultTickers = [
 { name: 'Invesco NASDAQ 100', symbol: 'QQQM', isKRW: false }
  ];
 
+// 네트워크 차단 시 보여줄 예비(Mock) 데이터
+const fallbackData = [
+{ name: 'KoAct 미국나스닥100액티브', ticker: '468960', price: 11250, changeRate: 1.45, changeAmount: 160, isKRW: true },
+{ name: 'Invesco QQQ Trust', ticker: 'QQQ', price: 435.20, changeRate: 0.82, changeAmount: 3.55, isKRW: false },
+{ name: 'Invesco NASDAQ 100', ticker: 'QQQM', price: 180.50, changeRate: -0.25, changeAmount: -0.45, isKRW: false }
+ ];
+
 let myTickers = JSON.parse(localStorage.getItem('myETFs')) || defaultTickers;
 
-function saveTickers() {
-localStorage.setItem('myETFs', JSON.stringify(myTickers));
-}
+function saveTickers() { localStorage.setItem('myETFs', JSON.stringify(myTickers)); }
 
-// 앱이 꼬였을 때 모든 데이터를 날리고 초기 상태로 복구하는 함수
 function resetApp() {
 if(confirm("모든 종목 데이터를 초기화하시겠습니까? (기본 종목으로 복구됩니다)")) {
 localStorage.removeItem('myETFs');
@@ -196,6 +103,14 @@ function formatNumber(num, isKRW) {
 return isKRW ? Math.round(num).toLocaleString() + '원' : '$`' + num.toFixed(2);
 }
 
+// 방화벽 무한 대기를 막기 위한 타임아웃(4초) 함수
+function fetchWithTimeout(url, options, timeout = 4000) {
+return Promise.race([
+fetch(url, options),
+new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), timeout))
+ ]);
+}
+
 async function fetchETFData() {
 if (myTickers.length === 0) {
 document.getElementById('dashboard').innerHTML = '<div class="loading">등록된 종목이 없습니다.</div>';
@@ -203,14 +118,17 @@ document.getElementById('copyBtn').disabled = true;
 return;
 }
 
-document.getElementById('dashboard').innerHTML = '<div class="loading">데이터를 불러오는 중입니다... ⏳</div>';
+document.getElementById('dashboard').innerHTML = '<div class="loading">네트워크 연결 확인 중... 최대 4초 대기 ⏳</div>';
+document.getElementById('warning-msg').style.display = 'none';
+
+let isNetworkBlocked = false;
 
 try {
 const results = await Promise.all(myTickers.map(async (ticker, index) => {
 try {
-const url = https://query1.finance.yahoo.com/v8/finance/chart/${ticker.symbol}; // 더 안정적이고 빠른 프록시 서버(corsproxy.io)로 교체 const proxyUrl =https://corsproxy.io/?${encodeURIComponent(url)};
+const url = https://query1.finance.yahoo.com/v8/finance/chart/${ticker.symbol}; // 안정성이 더 높은 allorigins의 raw 데이터 모드 사용 const proxyUrl =https://api.allorigins.win/raw?url=${encodeURIComponent(url)};
 
-const response = await fetch(proxyUrl);
+const response = await fetchWithTimeout(proxyUrl);
 const data = await response.json();
 
 if(!data.chart || !data.chart.result) throw new Error("Invalid Data");
@@ -218,68 +136,54 @@ if(!data.chart || !data.chart.result) throw new Error("Invalid Data");
 const meta = data.chart.result[0].meta;
 const price = meta.regularMarketPrice;
 const prevClose = meta.chartPreviousClose;
-
 const changeAmount = price - prevClose;
 const changeRate = (changeAmount / prevClose) * 100;
 
-return {
-isValid: true,
-originalIndex: index,
-name: ticker.name,
-ticker: ticker.symbol.replace('.KS', ''),
-price: price,
-changeRate: changeRate,
-changeAmount: changeAmount,
-isKRW: ticker.isKRW
-};
+return { isValid: true, originalIndex: index, name: ticker.name, ticker: ticker.symbol.replace('.KS', ''), price: price, changeRate: changeRate, changeAmount: changeAmount, isKRW: ticker.isKRW };
 } catch (err) {
-// 특정 종목 로드 실패 시 앱 전체가 멈추지 않도록 방어
-return {
-isValid: false,
-originalIndex: index,
-name: ticker.name,
-ticker: ticker.symbol
-};
+isNetworkBlocked = true; // 타임아웃이나 차단 발생 시 체크
+throw err; // 바깥쪽 catch로 에러 던지기
 }
 }));
 
-etfDataList = results.filter(r => r.isValid);
+etfDataList = results;
 renderDashboard(results);
-document.getElementById('copyBtn').disabled = etfDataList.length === 0;
+document.getElementById('copyBtn').disabled = false;
 
 } catch (error) {
-document.getElementById('dashboard').innerHTML =
-<div class="loading" style="color: #ef4444;"&gt;데이터 로드에 완전히 실패했습니다.&lt;br&gt;빨간색 '초기화' 버튼을 눌러주세요.&lt;/div>;
+// 네트워크가 막히거나 에러가 났을 때 무한 로딩을 멈추고 예비 데이터를 보여줌
+document.getElementById('warning-msg').style.display = 'block';
+etfDataList = fallbackData; // 임시 데이터 연결
+renderDashboard(fallbackData, true);
+document.getElementById('copyBtn').disabled = false;
 }
 }
 
-function renderDashboard(data) {
+function renderDashboard(data, isFallback = false) {
 const container = document.getElementById('dashboard');
 container.innerHTML = '';
 
-data.forEach(etf => {
-let cardHTML = '';
-
-if (etf.isValid) {
+data.forEach((etf, index) => {
 const isUp = etf.changeRate > 0;
 const changeClass = isUp ? 'up' : 'down';
 const sign = isUp ? '▲' : '▼';
 
-cardHTML = &lt;div class="etf-card"&gt; &lt;button class="delete-btn" onclick="removeTicker(${etf.originalIndex})">✕</button>
+// 오프라인 모드일 때는 삭제 버튼 숨김
+const deleteBtnHTML = isFallback ? '' : <button class="delete-btn" onclick="removeTicker(${etf.originalIndex})">✕</button>`;
+
+const cardHTML = &lt;div class="etf-card"&gt; ${deleteBtnHTML}
 <div class="etf-header">
-<span class="etf-name">{etf.ticker}</span>
+<span class="etf-name">${etf.name}&lt;/span&gt; &lt;span class="etf-ticker"&gt;${etf.ticker}</span>
 </div>
 <div class="etf-price-row">
-<span class="price">{changeClass}">
-{Math.abs(etf.changeAmount).toFixed(2)} ({etf.originalIndex})">✕</button>
-<div class="etf-header" style="margin-bottom: 0;">
-<span class="etf-name">${etf.name}&lt;/span&gt; &lt;span class="error-text"&gt;데이터를 찾을 수 없습니다. 티커를 확인하세요.&lt;/span&gt; &lt;/div&gt; &lt;/div&gt;;
-}
+<span class="price">${formatNumber(etf.price, etf.isKRW)}&lt;/span&gt; &lt;span class="change ${changeClass}">
+${sign} ${Math.abs(etf.changeAmount).toFixed(2)} (${Math.abs(etf.changeRate).toFixed(2)}%) &lt;/span&gt; &lt;/div&gt; &lt;/div&gt;;
 container.innerHTML += cardHTML;
 });
 
 const now = new Date();
-document.getElementById('time-display').innerText = 최근 업데이트:${now.toLocaleTimeString()}`;
+const statusText = isFallback ? "오프라인 (예비 데이터)" : 최근 업데이트: ${now.toLocaleTimeString()}`;
+document.getElementById('time-display').innerText = statusText;
 }
 
 function addTicker() {
@@ -288,20 +192,12 @@ const tickerInput = document.getElementById('newTicker');
 const name = nameInput.value.trim();
 let symbol = tickerInput.value.trim().toUpperCase();
 
-if (!name || !symbol) {
-alert("종목명과 티커를 모두 입력해 주세요.");
-return;
-}
+if (!name || !symbol) { alert("종목명과 티커를 모두 입력해 주세요."); return; }
 
-const isKoreanStock = /^\d{6}$`/.test(symbol);
+const isKoreanStock = /^\d{6}`$/.test(symbol);
 if (isKoreanStock) symbol += '.KS';
 
-myTickers.push({
-name: name,
-symbol: symbol,
-isKRW: isKoreanStock || symbol.includes('.KS')
-});
-
+myTickers.push({ name: name, symbol: symbol, isKRW: isKoreanStock || symbol.includes('.KS') });
 saveTickers();
 nameInput.value = '';
 tickerInput.value = '';
@@ -309,11 +205,7 @@ fetchETFData();
 }
 
 function removeTicker(index) {
-if(confirm("이 종목을 삭제하시겠습니까?")) {
-myTickers.splice(index, 1);
-saveTickers();
-fetchETFData();
-}
+if(confirm("이 종목을 삭제하시겠습니까?")) { myTickers.splice(index, 1); saveTickers(); fetchETFData(); }
 }
 
 function copyReport() {
@@ -322,13 +214,11 @@ let reportText = "[주요 ETF 및 종목 동향]\n\n";
 etfDataList.forEach(etf => {
 const isUp = etf.changeRate > 0;
 const sign = isUp ? '▲' : '▼';
-reportText += -${etf.name}: {sign}${Math.abs(etf.changeRate).toFixed(2)}%)\n`;
+reportText += - ${etf.name}: ${formatNumber(etf.price, etf.isKRW)} (${sign}${Math.abs(etf.changeRate).toFixed(2)}%)\n;
 });
 navigator.clipboard.writeText(reportText).then(() => {
 alert("보고용 텍스트가 클립보드에 복사되었습니다.");
-}).catch(err => {
-alert("복사에 실패했습니다.");
-});
+}).catch(err => { alert("복사에 실패했습니다."); });
 }
 
 fetchETFData();
