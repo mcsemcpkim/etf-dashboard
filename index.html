@@ -3,33 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>나스닥 ETF 대시보드 V3</title>
+<title>나스닥 ETF 대시보드 V4</title>
 <style>
-:root {
---bg-color: #0f172a;
---card-bg: #1e293b;
---text-main: #f8fafc;
---text-sub: #94a3b8;
---up-color: #ef4444;
---down-color: #3b82f6;
---btn-bg: #2563eb;
---input-bg: #334155;
---danger-bg: #ef4444;
---warning-bg: #f59e0b;
-}
-
+:root { --bg-color: #0f172a; --card-bg: #1e293b; --text-main: #f8fafc; --text-sub: #94a3b8; --up-color: #ef4444; --down-color: #3b82f6; --btn-bg: #2563eb; --input-bg: #334155; --danger-bg: #ef4444; --warning-bg: #f59e0b; }
 body { font-family: 'Pretendard', -apple-system, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; padding-bottom: 40px; }
 header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-top: 10px; }
 h1 { font-size: 22px; margin: 0; font-weight: 700; }
-
 .add-form { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; background-color: var(--card-bg); padding: 12px; border-radius: 12px; }
 .add-form input { flex: 1; min-width: 100px; background-color: var(--input-bg); border: 1px solid #475569; color: white; padding: 10px; border-radius: 8px; font-size: 14px; }
 .btn { color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; white-space: nowrap; }
 .add-btn { background-color: var(--btn-bg); }
 .reset-btn { background-color: var(--danger-bg); }
-
-.network-warning { background-color: rgba(245, 158, 11, 0.2); color: var(--warning-bg); padding: 12px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; display: none; border: 1px solid var(--warning-bg); }
-
+.network-warning { background-color: rgba(245, 158, 11, 0.2); color: var(--warning-bg); padding: 12px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; display: none; border: 1px solid var(--warning-bg); line-height: 1.4; }
 .etf-card { background-color: var(--card-bg); border-radius: 16px; padding: 20px; margin-bottom: 16px; position: relative; }
 .delete-btn { position: absolute; top: 16px; right: 16px; background: none; border: none; color: #64748b; font-size: 16px; cursor: pointer; padding: 4px; }
 .etf-header { display: flex; justify-content: space-between; margin-bottom: 12px; padding-right: 24px; }
@@ -40,24 +25,27 @@ h1 { font-size: 22px; margin: 0; font-weight: 700; }
 .change { font-size: 15px; font-weight: 600; padding: 4px 8px; border-radius: 6px; }
 .up { color: var(--up-color); background-color: rgba(239, 68, 68, 0.1); }
 .down { color: var(--down-color); background-color: rgba(59, 130, 246, 0.1); }
-
 .copy-btn { width: 100%; background-color: var(--btn-bg); color: white; border: none; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 600; margin-top: 10px; cursor: pointer; }
 .copy-btn:disabled { background-color: #475569; cursor: not-allowed; }
 .last-update { text-align: center; color: var(--text-sub); font-size: 12px; margin-top: 24px; }
-.loading { text-align: center; padding: 40px 0; color: var(--text-sub); font-weight: 600; }
+.loading { text-align: center; padding: 40px 0; color: var(--text-sub); font-weight: 600; line-height: 1.5; }
+.debug-log { background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 8px; font-size: 12px; margin-bottom: 16px; font-family: monospace; display: none; word-break: break-all; }
 </style>
 </head>
 <body>
 
 <header>
-<h1>🇺🇸 나스닥 모니터링 <span style="color:#2563eb; font-size:14px;">[V3]</span></h1>
+<h1>🇺🇸 나스닥 모니터링 <span style="color:#22c55e; font-size:14px;">[V4]</span></h1>
 </header>
+
+<!-- 블랙박스: 치명적 에러 발생 시 여기에 표시됩니다 -->
+<div id="debug-box" class="debug-log"></div>
 
 <div class="add-form">
 <input type="text" id="newName" placeholder="종목명">
 <input type="text" id="newTicker" placeholder="티커">
 <button class="btn add-btn" onclick="addTicker()">추가</button>
-<button class="btn reset-btn" onclick="hardReset()">강제 리셋</button>
+<button class="btn reset-btn" onclick="hardReset()">초기화</button>
 </div>
 
 <div id="warning-msg" class="network-warning">
@@ -65,17 +53,35 @@ h1 { font-size: 22px; margin: 0; font-weight: 700; }
 </div>
 
 <div id="dashboard">
-<!-- V3임을 명확히 알 수 있는 새로운 로딩 문구 -->
-<div class="loading">🚀 [V3] 시스템 시작 및 데이터 점검 중... ⏳</div>
+<div class="loading">🚀 [V4] 시스템 구동 중... (잠시만 기다려주세요) ⏳</div>
 </div>
 
 <button class="copy-btn" id="copyBtn" onclick="copyReport()" disabled>📋 주요 수치 보고용 복사</button>
 <div class="last-update" id="time-display">데이터 대기 중...</div>
 
 <script>
-let etfDataList = [];
-let myTickers = [];
+// --- 1. 블랙박스 에러 추적기 (앱이 죽는 즉시 화면에 원인을 출력합니다) ---
+window.onerror = function(msg, url, lineNo, columnNo, error) {
+const debugBox = document.getElementById('debug-box');
+debugBox.style.display = 'block';
+debugBox.innerHTML = 🚨 앱 충돌 감지!&lt;br&gt;내용: ${msg}<br>줄 번호: ${lineNo};
+return false;
+};
 
+// --- 2. 안전한 메모리(localStorage) 접근기 (보안에 막혀도 죽지 않음) ---
+function safeGetStorage() {
+try { return localStorage.getItem('myETFs'); }
+catch (e) { return null; } // 카카오톡 브라우저 등에서 막히면 그냥 빈 값 반환
+}
+function safeSetStorage(data) {
+try { localStorage.setItem('myETFs', data); }
+catch (e) { console.warn('메모리 저장 권한이 없습니다.'); }
+}
+function safeClearStorage() {
+try { localStorage.clear(); } catch(e) {}
+}
+
+let etfDataList = [];
 const defaultTickers = [
 { name: 'KoAct 미국나스닥100액티브', symbol: '468960.KS', isKRW: true },
 { name: 'Invesco QQQ Trust', symbol: 'QQQ', isKRW: false },
@@ -88,51 +94,46 @@ const fallbackData = [
 { name: 'Invesco NASDAQ 100', ticker: 'QQQM', price: 180.50, changeRate: -0.25, changeAmount: -0.45, isKRW: false }
  ];
 
-// [핵심 변경점] 메모리 오염 시 앱이 뻗는 것을 방지하는 강력한 보호막 (try-catch)
+// 데이터 불러오기 (안전 모드)
+let myTickers = defaultTickers;
 try {
-const stored = localStorage.getItem('myETFs');
+const stored = safeGetStorage();
 if (stored) {
-myTickers = JSON.parse(stored);
-if (!Array.isArray(myTickers)) throw new Error("데이터 깨짐");
-} else {
-myTickers = defaultTickers;
+const parsed = JSON.parse(stored);
+if (Array.isArray(parsed) && parsed.length > 0) myTickers = parsed;
 }
-} catch (error) {
-console.error("저장된 데이터 오류, 초기화 진행");
-localStorage.removeItem('myETFs');
-myTickers = defaultTickers;
+} catch (e) {
+safeClearStorage(); // 깨진 데이터 청소
 }
 
-function saveTickers() { localStorage.setItem('myETFs', JSON.stringify(myTickers)); }
-
-// 브라우저 캐시까지 완전히 박살 내는 강제 리셋 함수
 function hardReset() {
-if(confirm("앱이 멈추셨나요? 캐시를 비우고 앱을 강제로 초기화합니다.")) {
-localStorage.clear();
+if(confirm("기본 종목으로 초기화하시겠습니까?")) {
+safeClearStorage();
 window.location.href = window.location.pathname + "?reset=" + new Date().getTime();
 }
 }
 
 function formatNumber(num, isKRW) {
+if(isNaN(num) || num === null) return '-';
 return isKRW ? Math.round(num).toLocaleString() + '원' : '$`' + num.toFixed(2);
 }
 
-function fetchWithTimeout(url, options, timeout = 4000) {
+function fetchWithTimeout(url, options, timeout = 5000) {
 return Promise.race([
 fetch(url, options),
 new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), timeout))
  ]);
 }
 
+// --- 3. 핵심 통신 로직 (setTimeout 우회 제거로 직관적 실행) ---
 async function fetchETFData() {
 if (myTickers.length === 0) {
 document.getElementById('dashboard').innerHTML = '<div class="loading">등록된 종목이 없습니다.</div>';
 return;
 }
 
-// UI 변경 확인을 위한 약간의 지연(의도적)
-setTimeout(async () => {
-document.getElementById('dashboard').innerHTML = '<div class="loading">📡 서버와 통신 중입니다 (최대 4초)... ⏳</div>';
+// 시작하자마자 로딩 문구 즉시 변경
+document.getElementById('dashboard').innerHTML = '<div class="loading">📡 서버와 통신 중입니다...<br><span style="font-size:12px; color:#ef4444;">(최대 5초 소요, 실패시 예비 데이터로 자동 전환)</span></div>';
 document.getElementById('warning-msg').style.display = 'none';
 
 try {
@@ -140,15 +141,16 @@ const results = await Promise.all(myTickers.map(async (ticker, index) => {
 const url = https://query1.finance.yahoo.com/v8/finance/chart/${ticker.symbol}; const proxyUrl =https://api.allorigins.win/raw?url=${encodeURIComponent(url)};
 
 const response = await fetchWithTimeout(proxyUrl);
-const data = await response.json();
+if (!response.ok) throw new Error("Network Response Error");
 
+const data = await response.json();
 if(!data.chart || !data.chart.result) throw new Error("Invalid Data");
 
 const meta = data.chart.result[0].meta;
 const price = meta.regularMarketPrice;
 const prevClose = meta.chartPreviousClose;
 const changeAmount = price - prevClose;
-const changeRate = (changeAmount / prevClose) * 100;
+const changeRate = prevClose !== 0 ? (changeAmount / prevClose) * 100 : 0;
 
 return { isValid: true, originalIndex: index, name: ticker.name, ticker: ticker.symbol.replace('.KS', ''), price: price, changeRate: changeRate, changeAmount: changeAmount, isKRW: ticker.isKRW };
 }));
@@ -158,19 +160,19 @@ renderDashboard(results);
 document.getElementById('copyBtn').disabled = false;
 
 } catch (error) {
+// 어떤 통신 에러가 나도 안전모드(fallback)로 강제 화면 전환
 document.getElementById('warning-msg').style.display = 'block';
 etfDataList = fallbackData;
 renderDashboard(fallbackData, true);
 document.getElementById('copyBtn').disabled = false;
 }
-}, 300); // UI가 멈춰있지 않다는 것을 0.3초 딜레이로 확실히 보여줌
 }
 
 function renderDashboard(data, isFallback = false) {
 const container = document.getElementById('dashboard');
 container.innerHTML = '';
 
-data.forEach((etf, index) => {
+data.forEach((etf) => {
 const isUp = etf.changeRate > 0;
 const changeClass = isUp ? 'up' : 'down';
 const sign = isUp ? '▲' : '▼';
@@ -203,14 +205,18 @@ const isKoreanStock = /^\d{6}`$/.test(symbol);
 if (isKoreanStock) symbol += '.KS';
 
 myTickers.push({ name: name, symbol: symbol, isKRW: isKoreanStock || symbol.includes('.KS') });
-saveTickers();
+safeSetStorage(JSON.stringify(myTickers));
 nameInput.value = '';
 tickerInput.value = '';
 fetchETFData();
 }
 
 function removeTicker(index) {
-if(confirm("이 종목을 삭제하시겠습니까?")) { myTickers.splice(index, 1); saveTickers(); fetchETFData(); }
+if(confirm("이 종목을 삭제하시겠습니까?")) {
+myTickers.splice(index, 1);
+safeSetStorage(JSON.stringify(myTickers));
+fetchETFData();
+}
 }
 
 function copyReport() {
